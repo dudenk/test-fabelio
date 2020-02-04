@@ -15,7 +15,7 @@
       </div>
     </div>
     <LoadingUi :loaded="loaded">
-      <div class="products">
+      <div class="products" v-if="products.length > 0">
         <div class="card" v-for="(p,index) of products" :key="index">
           <div class="product-item">
             <h3 class="product-name">{{p.name.substring(0,50)}} <span class="price">{{formatPrice(p.price,'Rp')}}</span></h3>
@@ -27,6 +27,9 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="product-not-found" v-else>
+        <p>Product not found, please recheck the keyword and filter applied.</p>
       </div>
     </LoadingUi>
   </div>
@@ -54,6 +57,7 @@ export default {
         { value: 'more', name: '& More'},
       ],
       selected_delivery_time:[],
+      serverParam: { s: '', fs:'', del:'' },
       error: '',
     }
   },
@@ -72,53 +76,52 @@ export default {
   },
   methods: {
     fetchData (params) {
+      var vm = this
+      this.loaded = false
       axios.post('https://www.mocky.io/v2/5c9105cb330000112b649af8', params)
         .then(response => {
           this.loaded = true
-          this.products = response.data.products
           this.furniture_styles = response.data.furniture_styles
+          this.products = response.data.products
+          if ( this.searchValue ) {
+            this.products = this.products.filter(product => {
+              return product.name.toLowerCase().includes(this.searchValue.toLowerCase())
+            })
+          }
+          if ( this.selected_furniture_styles ) {
+            if ( this.selected_furniture_styles.length > 0 ) {
+            this.products = this.products.filter(function (product) {
+              return product.furniture_style.find(style => vm.selected_furniture_styles.includes(style))
+            })
+            } else {
+              this.products = this.products
+            }
+          }
+          if (this.selected_delivery_time) {
+            console.log(this.selected_delivery_time)
+            if ( this.selected_delivery_time > 0 ) {
+              this.products = this.products.filter(function (product) {
+                return parseInt(product.delivery_time) <= parseInt(vm.selected_delivery_time);
+              })
+            } else {
+              this.products = this.products
+            }
+          }
         })
     },
     searchByName(params) {
-      this.loaded = false
-      axios.post('https://www.mocky.io/v2/5c9105cb330000112b649af8', params)
-        .then(response => {
-          this.loaded = true
-          this.products = response.data.products.filter(product => {
-            return product.name.toLowerCase().includes(this.searchValue.toLowerCase())
-          })
-        })
+      this.serverParam.s = params
+      this.fetchData(this.serverParam)
     },
     filterByStyle (params) {
-      var vm = this
       this.selected_furniture_styles = params
-        this.loaded = false
-        axios.post('https://www.mocky.io/v2/5c9105cb330000112b649af8', params)
-          .then(response => {
-            this.loaded = true
-            if ( params.length > 0 ) {
-              this.products = response.data.products.filter(function (product) {
-                return product.furniture_style.find(style => params.includes(style))
-              })
-            } else {
-              this.products = response.data.products
-            }
-          })
+      this.serverParam.fs = params.join(',')
+      this.fetchData(this.serverParam)
     },
     filterByDelivery (params) {
-      this.loaded = false
-        params = Math.max.apply(Math, params);
-        axios.post('https://www.mocky.io/v2/5c9105cb330000112b649af8', params)
-          .then(response => {
-            this.loaded = true
-            if ( params.length > 0 && !params.includes("more") ) {
-              this.products = response.data.products.filter(function (product) {
-                return parseInt(product.delivery_time) <= parseInt(params);
-              })
-            } else {
-              this.products = response.data.products
-            }
-       })
+      this.selected_delivery_time = parseInt(Math.max.apply(Math, params));
+      this.serverParam.del = this.selected_delivery_time
+      this.fetchData(this.serverParam)
     }
     
   }

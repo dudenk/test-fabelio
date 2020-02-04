@@ -93,15 +93,16 @@ export default {
 }
 
 #checkboxes {
-  border: 1px #dadada solid;
   position: absolute;
-  background: #fff;
   width: 100%;
   z-index: 5;
   padding-top: 5px;
   margin-top: -2px;
   max-height: 180px;
   overflow-x: scroll;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px #dadada solid;
+  border-bottom: 3px solid #000000;
 }
 
 #checkboxes.active {

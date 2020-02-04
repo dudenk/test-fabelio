@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     fetchData (params) {
-      axios.post('http://www.mocky.io/v2/5c9105cb330000112b649af8', params)
+      axios.post('https://www.mocky.io/v2/5c9105cb330000112b649af8', params)
         .then(response => {
           this.loaded = true
           this.products = response.data.products
@@ -81,7 +81,7 @@ export default {
     },
     searchByName(params) {
       this.loaded = false
-      axios.post('http://www.mocky.io/v2/5c9105cb330000112b649af8', params)
+      axios.post('https://www.mocky.io/v2/5c9105cb330000112b649af8', params)
         .then(response => {
           this.loaded = true
           this.products = response.data.products.filter(product => {
@@ -93,7 +93,7 @@ export default {
       var vm = this
       this.selected_furniture_styles = params
         this.loaded = false
-        axios.post('http://www.mocky.io/v2/5c9105cb330000112b649af8', params)
+        axios.post('https://www.mocky.io/v2/5c9105cb330000112b649af8', params)
           .then(response => {
             this.loaded = true
             if ( params.length > 0 ) {
@@ -108,7 +108,7 @@ export default {
     filterByDelivery (params) {
       this.loaded = false
         params = Math.max.apply(Math, params);
-        axios.post('http://www.mocky.io/v2/5c9105cb330000112b649af8', params)
+        axios.post('https://www.mocky.io/v2/5c9105cb330000112b649af8', params)
           .then(response => {
             this.loaded = true
             if ( params.length > 0 && !params.includes("more") ) {

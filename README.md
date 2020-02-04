@@ -22,5 +22,7 @@ npm run build
 npm run lint
 ```
 
+Untuk Card dan checkbox style mengikuti gaya materialize, tapi aplikasi simple ini tidak menggunakan themes apapun.
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
